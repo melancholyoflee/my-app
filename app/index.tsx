@@ -1,67 +1,102 @@
 import React, { useContext } from "react";
-import {
-  View,
-  TextInput,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Button,
-  ActivityIndicator,
-} from "react-native";
+import { View, FlatList, StyleSheet } from "react-native";
+import { TextInput, Text, Button, ActivityIndicator, Card } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { DataContext } from "./DataContext";
 
-export default function index() {
-  const { data, loading, error, reloadData, reloadDataNearbyAttractions, setInputValue } = useContext(DataContext);
+export default function Index() {
+  const { data, loading, error, reloadData, reloadDataNearbyAttractions, setInputValue, setInputValueHashtag } =
+    useContext(DataContext);
   const router = useRouter();
 
   if (loading)
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={styles.center}>
         <Text style={{ marginBottom: 10 }}>資料載入中...</Text>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator animating={true} size="large" />
       </View>
     );
+
   if (error)
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={styles.center}>
         <Text style={{ color: "red" }}>錯誤: {error}</Text>
-        <Button title="重新嘗試" onPress={reloadData} />
+        <Button mode="contained" onPress={reloadData}>
+          重新嘗試
+        </Button>
       </View>
     );
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <TextInput placeholder="請輸入距離"
-        onChangeText={(text) => setInputValue(text)}></TextInput>
-      <Button title="重新取得資料" onPress={reloadData} />
-      <Button title="附近的景點" onPress={reloadDataNearbyAttractions} />
+    <View style={styles.container}>
+      <TextInput
+        mode="outlined"
+        label="距離"
+        placeholder="請輸入距離"
+        onChangeText={(text) => setInputValue(text)}
+        style={styles.input}
+      />
+      <View style={styles.buttonRow}>
+        <Button mode="contained" onPress={reloadData} style={styles.button}>
+          重新取得資料
+        </Button>
+        <Button mode="contained" onPress={reloadDataNearbyAttractions} style={styles.button}>
+          附近的景點
+        </Button>
+      </View>
 
+      <Text>共{data.length}筆</Text>
       <FlatList
         data={data}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity style={{ marginVertical: 10 }} onPress={() => router.push(`/details?index=${item.id}`)} >
-            <Text style={{ fontWeight: "bold", fontSize: 20 }}>
-              {item.id}
-            </Text>
-            <Text style={{ fontWeight: "bold", fontSize: 20 }}>
-              {item.name}
-            </Text>
-
-            <FlatList data={item.category} renderItem={({ item, index }) => (
-
-              <TouchableOpacity style={{ marginVertical: 10 }} onPress={() => console.log('ok')} >
-                <Text style={{ fontSize: 10 }}>
-                  {item}
-                </Text>
-              </TouchableOpacity>
-
-            )}
+        renderItem={({ item }) => (
+          <Card
+            style={styles.card}
+            onPress={() => router.push(`/details?index=${item.id}`)}
+          >
+            <Card.Content>
+              <Text variant="titleLarge">{item.name}</Text>
+              <Text variant="bodyMedium">{item.id}</Text>
+            </Card.Content>
+            <FlatList
+              data={item.category}
+              keyExtractor={(subItem, index) => index.toString()}
+              renderItem={({ item: subItem }) => (
+                <Button mode="text" onPress={() => setInputValueHashtag(subItem)}>
+                  {subItem}
+                </Button>
+              )}
             />
-          </TouchableOpacity>
+          </Card>
         )}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  input: {
+    marginBottom: 20,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  button: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  card: {
+    marginVertical: 10,
+  },
+});

@@ -1,45 +1,60 @@
 import React, { useContext } from "react";
-import { ScrollView ,View, Text, Button } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { DataContext } from "./DataContext";
-import { Linking } from 'react-native';
+import { Text, Button, Card } from "react-native-paper";
+import { Linking } from "react-native";
 
-export default function details() {
+export default function Details() {
   const { index } = useLocalSearchParams();
   const { data } = useContext(DataContext);
 
-  const item = data.filter(x=>x.id==index)[0];
-  //const item = data.find((entry) => entry.id === id);
+  const item = data.find((x) => x.id == index);
 
+  const makeCall = async () => {
+    const url = `tel:${item.phone}`;
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    }
+  };
 
-  const makeCall
-    = async () => {
-      const url
-        = item.phone
-        ;
-      const supported
-        = await Linking
-          .canOpenURL
-          (url);
-      await Linking
-        .openURL
-        (url);
-    };
-
-
-
-
-  if (!item) return <Text>內容不存在</Text>;
+  if (!item) return <Text style={styles.error}>內容不存在</Text>;
 
   return (
-    <ScrollView  style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 20, fontWeight: "bold" }}>{item.id}</Text>
-      <Text style={{ fontSize: 20, fontWeight: "bold" }}>{item.name}</Text>
-      <Text style={{ marginTop: 10 }}>{item.introduction}</Text>
-      <Text style={{ marginTop: 10 }}>地址: {item.address}</Text>
-      <Text style={{ marginTop: 10 }}>營業時間: {item.openTime}</Text>
-      <Text style={{ marginTop: 10 }}>電話: {item.phone}</Text>
-      <Button title="打電話" onPress={makeCall }></Button>
-    </ScrollView >
+    <ScrollView style={styles.container}>
+      <Card>
+        <Card.Content>
+          <Text variant="titleLarge">{item.name}</Text>
+          <Text variant="bodyMedium">{item.id}</Text>
+          <Text style={styles.text}>介紹: {item.introduction}</Text>
+          <Text style={styles.text}>地址: {item.address}</Text>
+          <Text style={styles.text}>營業時間: {item.open_time}</Text>
+          <Text style={styles.text}>電話: {item.tel}</Text>
+        </Card.Content>
+      </Card>
+      <Button mode="contained" onPress={makeCall} style={styles.button}>
+        打電話
+      </Button>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  text: {
+    marginVertical: 5,
+  },
+  button: {
+    marginTop: 20,
+  },
+  error: {
+    textAlign: "center",
+    marginTop: 50,
+    fontSize: 16,
+    color: "red",
+  },
+});
