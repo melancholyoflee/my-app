@@ -37,7 +37,7 @@ export const DataProvider = ({ children }) => {
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-
+  let value = 10;
   const proxyUrl = 'https://cors-anywhere.herokuapp.com/'
   const loadData = async () => {
     setLoading(true);
@@ -88,8 +88,11 @@ export const DataProvider = ({ children }) => {
       let result = await response.json();
 
       console.log(location);
-
-      result = findNearbyAttractions(location.coords.latitude, location.coords.longitude, result, 5)
+      var distancevalue = 10;
+      if (value != 10) {
+        distancevalue = value;
+      }
+      result = findNearbyAttractions(location.coords.latitude, location.coords.longitude, result, distancevalue)
 
       setData(result);
     } catch (err) {
@@ -99,12 +102,15 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  const setInputValue = async (inputValue) => {
+    value = inputValue;
+  };
   useEffect(() => {
     loadData();
   }, []);
 
   return (
-    <DataContext.Provider value={{ data, loading, error, reloadData: loadData, reloadDataNearbyAttractions: reloadDataNearbyAttractions }}>
+    <DataContext.Provider value={{ data, loading, error, reloadData: loadData, reloadDataNearbyAttractions: reloadDataNearbyAttractions, setInputValue: setInputValue }}>
       {children}
     </DataContext.Provider>
   );
