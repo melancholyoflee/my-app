@@ -36,20 +36,23 @@ export const DataProvider = ({ children }) => {
 
   const [mydistancevalue, setMyDistanceValue] = useState(0);
   const [categoryValue, seCategory] = useState([]);
-
+  const [selectCategoryValue, setSelectCategory] = useState([]);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
 
   let value = 10;
-  const proxyUrl = 'https://cors-anywhere.herokuapp.com/'
+  const proxyUrl = ''
   const loadData = async () => {
+ 
+    setSelectCategory([]);
+    setMyDistanceValue(0);
     setLoading(true);
     setError(null);
     try {
 
       const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
-      const response = await fetch(dataUrl);
+      const response = await fetch(proxyUrl+dataUrl);
       if (!response.ok) {
         throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
       }
@@ -86,7 +89,7 @@ export const DataProvider = ({ children }) => {
     try {
 
       const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
-      const response = await fetch(dataUrl);
+      const response = await fetch(proxyUrl+dataUrl);
       if (!response.ok) {
         throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
       }
@@ -101,7 +104,10 @@ export const DataProvider = ({ children }) => {
       setMyDistanceValue(distancevalue)
       console.log(mydistancevalue)
       result = findNearbyAttractions(location.coords.latitude, location.coords.longitude, result, distancevalue)
-
+      if(selectCategoryValue.length>0){
+          result= result.filter(x=>x.category.some(y=>y.includes(selectCategoryValue[0])) )
+      }
+    
       setData(result);
     } catch (err) {
       setError(err.message);
@@ -115,7 +121,7 @@ export const DataProvider = ({ children }) => {
     try {
 
       const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
-      const response = await fetch( dataUrl);
+      const response = await fetch(proxyUrl+dataUrl);
       if (!response.ok) {
         throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
       }
@@ -135,6 +141,36 @@ export const DataProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  const filterArticles = async (inputValue) => {
+    console.log(inputValue)
+    setSelectCategory(inputValue)
+    setLoading(true);
+    setError(null);
+    try {
+
+      const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
+      const response = await fetch(proxyUrl+dataUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
+      }
+      let result = await response.json();
+
+      console.log(location);
+      var distancevalue = 10;
+      if (value != 10) {
+        distancevalue = value;
+      }
+      result = result.filter(x=>x.category.some(y=>y.includes(inputValue)) )
+
+      setData(result);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   const setInputValue = async (inputValue) => {
     value = inputValue;
   };
@@ -143,7 +179,7 @@ export const DataProvider = ({ children }) => {
   }, []);
 
   return (
-    <DataContext.Provider value={{ data, loading, error, reloadData: loadData, reloadDataNearbyAttractions: reloadDataNearbyAttractions, setInputValue: setInputValue ,setInputValueHashtag:setInputValueHashtag ,mydistancevalue,categoryValue}}>
+    <DataContext.Provider value={{ data, loading, error, reloadData: loadData, reloadDataNearbyAttractions: reloadDataNearbyAttractions, setInputValue: setInputValue ,setInputValueHashtag:setInputValueHashtag ,mydistancevalue,categoryValue,filterArticles:filterArticles,selectCategoryValue}}>
       {children}
     </DataContext.Provider>
   );
