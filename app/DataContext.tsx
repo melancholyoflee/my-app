@@ -42,7 +42,7 @@ export const DataProvider = ({ children }) => {
 
 
   let value = 10;
-  const proxyUrl = ''
+  const proxyUrl = 'https://api.allorigins.win/raw?url='
   const loadData = async () => {
  
     setSelectCategory([]);
@@ -52,7 +52,7 @@ export const DataProvider = ({ children }) => {
     try {
 
       const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
-      const response = await fetch(proxyUrl+dataUrl);
+      const response = await fetch(dataUrl);
       if (!response.ok) {
         throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
       }
@@ -89,7 +89,7 @@ export const DataProvider = ({ children }) => {
     try {
 
       const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
-      const response = await fetch(proxyUrl+dataUrl);
+      const response = await fetch(dataUrl);
       if (!response.ok) {
         throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
       }
@@ -121,7 +121,7 @@ export const DataProvider = ({ children }) => {
     try {
 
       const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
-      const response = await fetch(proxyUrl+dataUrl);
+      const response = await fetch(dataUrl);
       if (!response.ok) {
         throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
       }
@@ -149,7 +149,7 @@ export const DataProvider = ({ children }) => {
     try {
 
       const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
-      const response = await fetch(proxyUrl+dataUrl);
+      const response = await fetch(dataUrl);
       if (!response.ok) {
         throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
       }

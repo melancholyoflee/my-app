@@ -1,8 +1,15 @@
 import React, { useContext } from "react";
-import { View,ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { DataContext } from "./DataContext";
-import { Text, Button, Card } from "react-native-paper";
+import { 
+  Text, 
+  Button, 
+  Card, 
+  IconButton, 
+  Surface, 
+  Divider 
+} from "react-native-paper";
 import { Linking } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
@@ -10,6 +17,7 @@ export default function Details() {
   const { index } = useLocalSearchParams();
   const { data } = useContext(DataContext);
 
+  // Find the current attraction based on the index
   const item = data.find((x) => x.id == index);
 
   const makeCall = async () => {
@@ -20,67 +28,151 @@ export default function Details() {
     }
   };
 
-  if (!item) return <Text style={styles.error}>內容不存在</Text>;
+  if (!item) return (
+    <Surface style={styles.errorContainer}>
+      <Text style={styles.errorText}>景點資訊不存在</Text>
+    </Surface>
+  );
 
   return (
-   
-      <ScrollView style={styles.container}>
-      <Card>
+    <ScrollView style={styles.container}>
+      {/* Attraction Card */}
+      <Card style={styles.card}>
+        <Card.Title 
+          title={item.name}
+          subtitle={`景點 ID: ${item.id}`}
+          titleStyle={styles.cardTitle}
+        />
         <Card.Content>
-          <Text variant="titleLarge">{item.name}</Text>
-          <Text variant="bodyMedium">{item.id}</Text>
-          <Text style={styles.text}>介紹: {item.introduction}</Text>
-          <Text style={styles.text}>地址: {item.address}</Text>
-          <Text style={styles.text}>營業時間: {item.open_time}</Text>
-          <Text style={styles.text}>電話: {item.tel}</Text>
-          <Text style={styles.text}>latitude: {item.lat}</Text>
-          <Text style={styles.text}>longitude: {item.long}</Text>
-           <Button mode="contained" onPress={makeCall} style={styles.button}>
-        打電話
-      </Button>
-    
-      <MapView
-  style={styles.map}
-  initialRegion={{
-    latitude: item.lat, // 初始纬度
-    longitude: item.long, // 初始经度
-    latitudeDelta: 0.01, // 垂直方向的显示范围
-    longitudeDelta: 0.01, // 水平方向的显示范围
-  }}
->
-  <Marker coordinate={{ latitude: item.lat, longitude: item.long }} />
-</MapView>
+          <Text style={styles.sectionTitle}>景點介紹</Text>
+          <Text style={styles.description}>{item.introduction}</Text>
+          
+          <Divider style={styles.divider} />
+          
+          <Text style={styles.infoText}>
+            <Text style={styles.boldLabel}>地址: </Text>
+            {item.address}
+          </Text>
+          
+          <Text style={styles.infoText}>
+            <Text style={styles.boldLabel}>營業時間: </Text>
+            {item.open_time}
+          </Text>
+          
+          <Text style={styles.infoText}>
+            <Text style={styles.boldLabel}>電話: </Text>
+            {item.tel}
+          </Text>
         </Card.Content>
-      
+        
+        {/* Call Button */}
+        <Card.Actions>
+          <Button 
+            mode="contained" 
+            onPress={makeCall} 
+            style={styles.callButton}
+          >
+            撥打電話
+          </Button>
+        </Card.Actions>
       </Card>
-      
-   
-    </ScrollView> 
-  
-      
-   
-    
+
+      {/* Map Section */}
+      <Surface style={styles.mapContainer}>
+        <Text style={styles.sectionTitle}>景點位置</Text>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: parseFloat(item.lat),
+            longitude: parseFloat(item.long),
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
+        >
+          <Marker
+            coordinate={{
+              latitude: parseFloat(item.lat),
+              longitude: parseFloat(item.long),
+            }}
+            title={item.name}
+            description={item.address}
+          />
+        </MapView>
+        
+        {/* Coordinates Information */}
+        <Text style={styles.coordinatesText}>
+          <Text style={styles.boldLabel}>緯度: </Text>
+          {item.lat}
+          <Text style={styles.boldLabel}>  經度: </Text>
+          {item.long}
+        </Text>
+      </Surface>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-
     flex: 1,
+    backgroundColor: '#f5f5f5',
   },
-  text: {
-    marginVertical: 5,
+  card: {
+    margin: 16,
+    elevation: 4,
   },
-  button: {
-    marginTop: 20,
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
-  error: {
-    textAlign: "center",
-    marginTop: 50,
+  sectionTitle: {
     fontSize: 16,
-    color: "red",
-  }, map: {
-    height:300 ,
-    width:"100%"
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#6200ee',
+  },
+  description: {
+    marginBottom: 16,
+    lineHeight: 22,
+  },
+  infoText: {
+    marginVertical: 6,
+    fontSize: 14,
+  },
+  boldLabel: {
+    fontWeight: 'bold',
+    color: '#6200ee',
+  },
+  divider: {
+    marginVertical: 12,
+  },
+  callButton: {
+    marginTop: 8,
+  },
+  mapContainer: {
+    margin: 16,
+    borderRadius: 10,
+    overflow: 'hidden',
+    elevation: 4,
+  },
+  map: {
+    height: 250,
+    width: '100%',
+  },
+  coordinatesText: {
+    padding: 12,
+    fontSize: 12,
+    textAlign: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
   },
 });
