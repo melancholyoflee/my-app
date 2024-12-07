@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package":"tw.edu.ksu.app.traveltainan"
     },
     "web": {
       "bundler": "metro",

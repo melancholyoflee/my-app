@@ -63,7 +63,7 @@ export default function Index() {
       /> 
      <View style={styles.buttonRow}> 
          <Button mode="contained" onPress={reloadDataNearbyAttractions} style={styles.button}>
-          附近的景點
+          附近景點
         </Button>
         </View>
         </View>
