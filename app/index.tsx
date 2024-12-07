@@ -5,10 +5,11 @@ import { useRouter } from "expo-router";
 import { DataContext } from "./DataContext";
 
 export default function Index() {
-  const { data, loading, error, reloadData, reloadDataNearbyAttractions, setInputValue, setInputValueHashtag } =
+  const { data, loading, error, reloadData, reloadDataNearbyAttractions, setInputValue, setInputValueHashtag ,mydistancevalue,categoryValue} =
     useContext(DataContext);
   const router = useRouter();
-
+   console.log("distancevalue:"+mydistancevalue);
+   console.log("categoryValue:"+categoryValue);
   if (loading)
     return (
       <View style={styles.center}>
@@ -28,7 +29,10 @@ export default function Index() {
     );
 
   return (
-    <View style={styles.container}>
+  
+    <View style={styles.container}> 
+     <Text>現在距離{mydistancevalue}公里的景點</Text>
+ 
       <TextInput
         mode="outlined"
         label="距離"

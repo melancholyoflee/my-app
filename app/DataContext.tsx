@@ -34,9 +34,13 @@ export const DataProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [mydistancevalue, setMyDistanceValue] = useState(0);
+  const [categoryValue, seCategory] = useState([]);
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+
+
   let value = 10;
   const proxyUrl = 'https://cors-anywhere.herokuapp.com/'
   const loadData = async () => {
@@ -45,11 +49,12 @@ export const DataProvider = ({ children }) => {
     try {
 
       const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
-      const response = await fetch(proxyUrl + dataUrl);
+      const response = await fetch(dataUrl);
       if (!response.ok) {
         throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
       }
       const result = await response.json();
+      seCategory( [...new Set(result.map(x=>x.category).flat())])
       setData(result);
     } catch (err) {
       setError(err.message);
@@ -81,7 +86,7 @@ export const DataProvider = ({ children }) => {
     try {
 
       const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
-      const response = await fetch(proxyUrl + dataUrl);
+      const response = await fetch(dataUrl);
       if (!response.ok) {
         throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
       }
@@ -92,6 +97,9 @@ export const DataProvider = ({ children }) => {
       if (value != 10) {
         distancevalue = value;
       }
+      console.log(distancevalue)
+      setMyDistanceValue(distancevalue)
+      console.log(mydistancevalue)
       result = findNearbyAttractions(location.coords.latitude, location.coords.longitude, result, distancevalue)
 
       setData(result);
@@ -107,7 +115,7 @@ export const DataProvider = ({ children }) => {
     try {
 
       const dataUrl = "https://www.twtainan.net/data/attractions_zh-tw.json";
-      const response = await fetch(proxyUrl + dataUrl);
+      const response = await fetch( dataUrl);
       if (!response.ok) {
         throw new Error(`HTTP 錯誤，狀態碼: ${response.status}`);
       }
@@ -135,7 +143,7 @@ export const DataProvider = ({ children }) => {
   }, []);
 
   return (
-    <DataContext.Provider value={{ data, loading, error, reloadData: loadData, reloadDataNearbyAttractions: reloadDataNearbyAttractions, setInputValue: setInputValue ,setInputValueHashtag:setInputValueHashtag }}>
+    <DataContext.Provider value={{ data, loading, error, reloadData: loadData, reloadDataNearbyAttractions: reloadDataNearbyAttractions, setInputValue: setInputValue ,setInputValueHashtag:setInputValueHashtag ,mydistancevalue,categoryValue}}>
       {children}
     </DataContext.Provider>
   );

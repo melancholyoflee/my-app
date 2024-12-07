@@ -12,7 +12,7 @@ export default function Details() {
   const item = data.find((x) => x.id == index);
 
   const makeCall = async () => {
-    const url = `tel:${item.phone}`;
+    const url = `tel:${item.tel}`;
     const supported = await Linking.canOpenURL(url);
     if (supported) {
       await Linking.openURL(url);
